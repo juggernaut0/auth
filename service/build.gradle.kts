@@ -10,7 +10,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":common"))
+    implementation(project(":auth-common"))
 
     implementation(kotlin("stdlib-jdk8"))
 

@@ -4,6 +4,9 @@ plugins {
 }
 
 subprojects {
+    group = "dev.twarner.auth"
+    version = "1-SNAPSHOT"
+
     repositories {
         mavenCentral()
         maven("https://kotlin.bintray.com/kotlinx")

@@ -5,6 +5,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization").version("1.3.61")
     id("com.moowork.node")
+    `maven-publish`
 }
 
 kotlin {
