@@ -7,10 +7,8 @@ import io.ktor.client.features.ClientRequestException
 import juggernaut0.multiplatform.ktor.callApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kui.Component
-import kui.Props
-import kui.classes
-import kui.renderOnSet
+import kui.*
+import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLStyleElement
 import kotlin.browser.document
 import kotlin.browser.window
@@ -25,6 +23,8 @@ class AuthPanel(private val httpClient: HttpClient) : Component() {
 
     private var errorText: String? by renderOnSet(null)
 
+    private var submitting by renderOnSet(false)
+
     private fun register() {
         if (email.isEmpty() || password.isEmpty()) {
             errorText = "Required fields are missing."
@@ -36,12 +36,17 @@ class AuthPanel(private val httpClient: HttpClient) : Component() {
             return
         }
 
+        submitting = true
+
         GlobalScope.launch {
             try {
-                val user = httpClient.callApi(auth.api.v1.register, Unit, PasswordRegistrationRequest(email, displayName, password))
-                window.localStorage.setItem("token", user.token)
+                val req = PasswordRegistrationRequest(email, displayName.takeIf { it.isNotBlank() }, password)
+                val user = httpClient.callApi(auth.api.v1.register, Unit, req)
+                setToken(user.token)
+                (document.getElementById("reg-form") as HTMLFormElement).submit() // reloads the page
             } catch (e: ClientRequestException) {
                 errorText = "Registration failed."
+                submitting = false
             }
         }
     }
@@ -52,12 +57,16 @@ class AuthPanel(private val httpClient: HttpClient) : Component() {
             return
         }
 
+        submitting = true
+
         GlobalScope.launch {
             try {
                 val user = httpClient.callApi(auth.api.v1.signIn, Unit, PasswordSignInRequest(email, password))
-                window.localStorage.setItem("token", user.token)
+                setToken(user.token)
+                (document.getElementById("signin-form") as HTMLFormElement).submit() // reloads the page
             } catch (e: ClientRequestException) {
                 errorText = "Sign in failed. Check that your email and password are correct."
+                submitting = false
             }
         }
     }
@@ -74,56 +83,91 @@ class AuthPanel(private val httpClient: HttpClient) : Component() {
                 }
             }
             div(classes("signin-form")) {
-                label(classes("signin-label")) {
-                    +"Email"
-                    inputText(classes("signin-input"), model = ::email)
-                }
-                label(classes("signin-label")) {
-                    +"Password"
-                    // TODO use kui password input when available
-                    inputText(classes("signin-input"), model = ::password)
-                }
                 if (registrationMode) {
-                    label(classes("signin-label")) {
-                        +"Confirm password"
-                        // TODO use kui password input when available
-                        inputText(classes("signin-input"), model = ::confirmPassword)
-                    }
-                    label(classes("signin-label")) {
-                        +"Display Name"
-                        small(classes("signin-muted")) { +" (Optional)" }
-                        inputText(classes("signin-input"), model = ::displayName)
-                    }
-                }
-                if (errorText != null) {
-                    span(classes("signin-errortext")) { +errorText!! }
-                }
-                button(Props(
-                        classes = listOf("signin-button"),
-                        click = { if (registrationMode) register() else signIn() }
-                )) {
-                    if (registrationMode) {
-                        +"Create account"
-                    } else {
-                        +"Sign In"
-                    }
-                }
-                button(Props(
-                        classes = listOf("signin-button-outline"),
-                        click = {
-                            password = ""
-                            confirmPassword = ""
-                            registrationMode = !registrationMode
-                            errorText = null
-                        }
-                )) {
-                    if (registrationMode) {
-                        +"Back"
-                    } else {
-                        +"Create an account"
-                    }
+                    registrationForm()
+                } else {
+                    signInForm()
                 }
             }
+        }
+    }
+
+    private fun MarkupBuilder.signInForm() {
+        form(Props(id = "signin-form")) {
+            label(classes("signin-label")) {
+                +"Email"
+                inputText(classes("signin-input"), autocomplete = "email", model = ::email)
+            }
+            label(classes("signin-label")) {
+                +"Password"
+                inputPassword(classes("signin-input"), autocomplete = "current-password", model = ::password)
+            }
+        }
+        if (errorText != null) {
+            span(classes("signin-errortext")) { +errorText!! }
+        }
+        button(Props(
+                classes = listOf("signin-button"),
+                disabled = submitting,
+                click = { signIn() }
+        )) {
+            +"Sign In"
+        }
+        button(Props(
+                classes = listOf("signin-button-outline"),
+                disabled = submitting,
+                click = {
+                    password = ""
+                    confirmPassword = ""
+                    registrationMode = !registrationMode
+                    errorText = null
+                }
+        )) {
+            +"Create an account"
+        }
+    }
+
+    private fun MarkupBuilder.registrationForm() {
+        form(Props(id = "reg-form")) {
+            label(classes("signin-label")) {
+                +"Email"
+                inputText(classes("signin-input"), autocomplete = "email", model = ::email)
+            }
+            label(classes("signin-label")) {
+                +"Password"
+                inputPassword(classes("signin-input"), autocomplete = "new-password", model = ::password)
+            }
+            label(classes("signin-label")) {
+                +"Confirm password"
+                inputPassword(classes("signin-input"), autocomplete = "new-password", model = ::confirmPassword)
+            }
+            label(classes("signin-label")) {
+                +"Display Name"
+                small(classes("signin-muted")) { +" (Optional)" }
+                inputText(classes("signin-input"), model = ::displayName)
+            }
+        }
+        if (errorText != null) {
+            span(classes("signin-errortext")) { +errorText!! }
+        }
+        button(Props(
+                classes = listOf("signin-button"),
+                disabled = submitting,
+                click = { register() }
+        )) {
+            +"Create Account"
+        }
+        button(Props(
+                classes = listOf("signin-button-outline"),
+                disabled = submitting,
+                click = {
+                    password = ""
+                    confirmPassword = ""
+                    registrationMode = !registrationMode
+                    errorText = null
+                }
+        )) {
+            +"Back"
         }
     }
 

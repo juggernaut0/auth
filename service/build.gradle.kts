@@ -65,15 +65,17 @@ tasks {
         dependsOn(copyDist)
 
         from("openjdk:8-alpine")
-        addFile("service.tar", "/app/")
-        defaultCommand("/app/service/bin/service")
+        addFile("${project.name}-$version.tar", "/app/")
+        defaultCommand("/app/${project.name}-$version/bin/${project.name}")
     }
 
     val dockerBuild by registering(com.bmuschko.gradle.docker.tasks.image.DockerBuildImage::class) {
         dependsOn(dockerfile)
 
-        images.add("twarner.dev/auth:latest")
+        images.add("twarner.dev/auth:$version")
+    }
+
+    val run by getting(JavaExec::class) {
+        systemProperty("config.file", "local.conf")
     }
 }
-
-

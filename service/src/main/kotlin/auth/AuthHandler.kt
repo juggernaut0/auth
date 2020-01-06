@@ -47,7 +47,7 @@ class AuthHandler @Inject constructor(
                             throw e
                         }
                     }
-                    registrationRequest.displayName?.let { name ->
+                    registrationRequest.displayName?.takeIf { it.isNotBlank() }?.let { name ->
                         if (dao.isNameTaken(dsl, name)) {
                             throw BadRequestException("Display name is taken")
                         }
