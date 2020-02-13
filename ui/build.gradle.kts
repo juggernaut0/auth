@@ -11,7 +11,7 @@ dependencies {
     implementation(kotlin("stdlib-js"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.1.1")
 
-    api("com.github.juggernaut0.kui:kui:0.8.0")
+    api("com.github.juggernaut0.kui:kui:0.10.0")
 
     // TODO fix multiplatform-utils to include this
     api("io.ktor:ktor-client-js:1.2.6")

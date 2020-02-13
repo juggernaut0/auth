@@ -13,3 +13,9 @@ fun getToken(): String? {
 fun setToken(token: String) {
     window.localStorage[TOKEN_KEY] = token
 }
+
+fun isSignedIn(): Boolean = getToken() != null
+
+fun signOut() {
+    window.localStorage.removeItem(TOKEN_KEY)
+}

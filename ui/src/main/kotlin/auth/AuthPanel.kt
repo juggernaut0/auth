@@ -43,9 +43,10 @@ class AuthPanel(private val httpClient: HttpClient) : Component() {
                 val req = PasswordRegistrationRequest(email, displayName.takeIf { it.isNotBlank() }, password)
                 val user = httpClient.callApi(auth.api.v1.register, Unit, req)
                 setToken(user.token)
-                (document.getElementById("reg-form") as HTMLFormElement).submit() // reloads the page
+                (document.getElementById("reg-form") as HTMLFormElement).submit() // reloads the page on chrome
+                window.location.reload()
             } catch (e: ClientRequestException) {
-                errorText = "Registration failed."
+                errorText = "Registration failed: ${e.message}"
                 submitting = false
             }
         }
@@ -63,7 +64,8 @@ class AuthPanel(private val httpClient: HttpClient) : Component() {
             try {
                 val user = httpClient.callApi(auth.api.v1.signIn, Unit, PasswordSignInRequest(email, password))
                 setToken(user.token)
-                (document.getElementById("signin-form") as HTMLFormElement).submit() // reloads the page
+                (document.getElementById("signin-form") as HTMLFormElement).submit() // reloads the page on chrome
+                window.location.reload()
             } catch (e: ClientRequestException) {
                 errorText = "Sign in failed. Check that your email and password are correct."
                 submitting = false
