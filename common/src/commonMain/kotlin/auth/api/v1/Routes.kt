@@ -1,10 +1,10 @@
 package auth.api.v1
 
-import juggernaut0.multiplatform.UUIDSerializer
-import juggernaut0.multiplatform.api.ApiRoute
-import juggernaut0.multiplatform.api.Method.GET
-import juggernaut0.multiplatform.api.Method.POST
-import juggernaut0.multiplatform.api.pathOf
+import multiplatform.UUIDSerializer
+import multiplatform.api.ApiRoute
+import multiplatform.api.Method.GET
+import multiplatform.api.Method.POST
+import multiplatform.api.pathOf
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.internal.UnitSerializer
 import kotlinx.serialization.internal.nullable

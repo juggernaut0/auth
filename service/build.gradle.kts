@@ -1,3 +1,5 @@
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -48,34 +50,38 @@ apply {
     from("jooq.gradle")
 }
 tasks {
-    withType<KotlinCompile>().forEach {
-        it.kotlinOptions.jvmTarget = "1.8"
-        it.dependsOn("generatePostgresJooqSchemaSource")
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+        dependsOn("generatePostgresJooqSchemaSource")
     }
 
-    val distTar = getByName<Tar>("distTar")
+    val distTar = named<Tar>("distTar")
 
     val copyDist by registering(Copy::class) {
         dependsOn(distTar)
-        from(distTar.archiveFile)
+        from(distTar.flatMap { it.archiveFile })
         into("$buildDir/docker")
     }
 
-    val dockerfile by registering(com.bmuschko.gradle.docker.tasks.image.Dockerfile::class) {
+    val dockerfile by registering(Dockerfile::class) {
         dependsOn(copyDist)
 
-        from("openjdk:8-alpine")
-        addFile("${project.name}-$version.tar", "/app/")
-        defaultCommand("/app/${project.name}-$version/bin/${project.name}")
+        from("openjdk:11-jre-slim")
+        addFile(distTar.flatMap { it.archiveFileName }.map { Dockerfile.File(it, "/app/") })
+        defaultCommand(distTar.flatMap { it.archiveFile }.map { it.asFile.nameWithoutExtension }.map { listOf("/app/$it/bin/${project.name}") })
     }
 
-    val dockerBuild by registering(com.bmuschko.gradle.docker.tasks.image.DockerBuildImage::class) {
+    val dockerBuild by registering(DockerBuildImage::class) {
         dependsOn(dockerfile)
 
-        images.add("twarner.dev/auth:$version")
+        if (version.toString().endsWith("SNAPSHOT")) {
+            images.add("auth:SNAPSHOT")
+        } else {
+            images.add("juggernaut0/auth:$version")
+        }
     }
 
-    val run by getting(JavaExec::class) {
+    run.invoke {
         systemProperty("config.file", "local.conf")
     }
 }

@@ -1,19 +1,22 @@
 package auth
 
+import asynclite.async
 import auth.api.v1.PasswordRegistrationRequest
 import auth.api.v1.PasswordSignInRequest
-import io.ktor.client.HttpClient
-import io.ktor.client.features.ClientRequestException
-import juggernaut0.multiplatform.ktor.callApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import auth.api.v1.authModule
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import kui.*
+import multiplatform.FetchException
+import multiplatform.call
 import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLStyleElement
 import kotlin.browser.document
 import kotlin.browser.window
 
-class AuthPanel(private val httpClient: HttpClient) : Component() {
+class AuthPanel : Component() {
+    private val json = Json(JsonConfiguration.Stable.copy(strictMode = false), context = authModule)
+
     private var registrationMode: Boolean by renderOnSet(false)
 
     private var email = ""
@@ -38,14 +41,14 @@ class AuthPanel(private val httpClient: HttpClient) : Component() {
 
         submitting = true
 
-        GlobalScope.launch {
+        async {
             try {
                 val req = PasswordRegistrationRequest(email, displayName.takeIf { it.isNotBlank() }, password)
-                val user = httpClient.callApi(auth.api.v1.register, Unit, req)
+                val user = auth.api.v1.register.call(req, Unit, json = json)
                 setToken(user.token)
                 (document.getElementById("reg-form") as HTMLFormElement).submit() // reloads the page on chrome
                 window.location.reload()
-            } catch (e: ClientRequestException) {
+            } catch (e: FetchException) {
                 errorText = "Registration failed: ${e.message}"
                 submitting = false
             }
@@ -60,13 +63,13 @@ class AuthPanel(private val httpClient: HttpClient) : Component() {
 
         submitting = true
 
-        GlobalScope.launch {
+        async {
             try {
-                val user = httpClient.callApi(auth.api.v1.signIn, Unit, PasswordSignInRequest(email, password))
+                val user = auth.api.v1.signIn.call(PasswordSignInRequest(email, password), Unit, json = json)
                 setToken(user.token)
                 (document.getElementById("signin-form") as HTMLFormElement).submit() // reloads the page on chrome
                 window.location.reload()
-            } catch (e: ClientRequestException) {
+            } catch (e: FetchException) {
                 errorText = "Sign in failed. Check that your email and password are correct."
                 submitting = false
             }

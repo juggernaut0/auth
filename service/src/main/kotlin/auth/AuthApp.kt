@@ -10,9 +10,9 @@ import io.ktor.features.StatusPages
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.jetty.Jetty
-import juggernaut0.multiplatform.ktor.JsonSerializationFeature
-import juggernaut0.multiplatform.ktor.installWebApplicationExceptionHandler
 import kotlinx.serialization.json.Json
+import multiplatform.ktor.JsonSerializationFeature
+import multiplatform.ktor.installWebApplicationExceptionHandler
 import org.slf4j.event.Level
 import javax.inject.Inject
 

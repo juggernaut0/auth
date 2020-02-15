@@ -6,11 +6,11 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.defaultRequest
 import io.ktor.http.HttpHeaders
 import io.ktor.http.headersOf
-import juggernaut0.multiplatform.ktor.JsonSerialization
-import juggernaut0.multiplatform.ktor.callApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import multiplatform.ktor.JsonSerialization
+import multiplatform.ktor.callApi
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals

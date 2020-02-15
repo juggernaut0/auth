@@ -8,8 +8,8 @@ import auth.domain.TokenGenerator
 import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.routing.Route
-import juggernaut0.multiplatform.ktor.BadRequestException
-import juggernaut0.multiplatform.ktor.handleApi
+import multiplatform.ktor.BadRequestException
+import multiplatform.ktor.handleApi
 import org.jooq.exception.DataAccessException
 import org.slf4j.LoggerFactory
 import java.util.*

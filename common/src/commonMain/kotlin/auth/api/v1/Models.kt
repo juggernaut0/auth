@@ -2,8 +2,8 @@
 
 package auth.api.v1
 
-import juggernaut0.multiplatform.UUID
-import juggernaut0.multiplatform.UUIDSerializer
+import multiplatform.UUID
+import multiplatform.UUIDSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.modules.SerializersModule

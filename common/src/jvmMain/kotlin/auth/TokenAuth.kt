@@ -9,7 +9,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.http.headersOf
 import io.ktor.response.respond
-import juggernaut0.multiplatform.ktor.callApi
+import multiplatform.ktor.callApi
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.net.ConnectException
