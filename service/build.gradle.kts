@@ -55,8 +55,6 @@ tasks {
         dependsOn("generatePostgresJooqSchemaSource")
     }
 
-    val distTar = named<Tar>("distTar")
-
     val copyDist by registering(Copy::class) {
         dependsOn(distTar)
         from(distTar.flatMap { it.archiveFile })
