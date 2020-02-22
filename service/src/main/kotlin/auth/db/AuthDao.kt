@@ -16,7 +16,7 @@ class AuthDao @Inject constructor() {
         val userId = UUID.randomUUID()
         dsl.insertInto(AUTH_USER)
                 .set(AUTH_USER.ID, userId)
-                .set(AUTH_USER.EMAIL, email)
+                .set(AUTH_USER.EMAIL, email.trim())
                 .set(AUTH_USER.PROVIDER, AuthProvider.PASSWORD)
                 .executeAsync()
                 .await()
@@ -61,7 +61,7 @@ class AuthDao @Inject constructor() {
     suspend fun getUserPassByEmail(dsl: DSLContext, email: String): Record2<UUID, String>? {
         return dsl.select(AUTH_USER.ID, USER_PASS.HASHED_PASS)
                 .from(AUTH_USER.join(USER_PASS).onKey())
-                .where(DSL.lower(AUTH_USER.EMAIL).eq(DSL.lower(email)))
+                .where(DSL.lower(AUTH_USER.EMAIL).eq(DSL.lower(email.trim())))
                 .fetchAsync()
                 .await()
                 .firstOrNull()

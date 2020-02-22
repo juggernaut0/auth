@@ -59,6 +59,32 @@ class ApiTest {
     }
 
     @Test
+    fun registerDuplicateWithWhitespace() {
+        val client = buildClient()
+        val email = genEmail()
+        runBlocking {
+            val resp = client.callApi(register, Unit, PasswordRegistrationRequest(
+                    email = email,
+                    password = "password1"
+            ))
+
+            // Same email with whitespace should fail
+            assertFails {
+                client.callApi(register, Unit, PasswordRegistrationRequest(
+                        email = "\t$email  \n",
+                        password = "password2"
+                ))
+            }
+
+            // First token should still be valid
+            val userId = resp.id
+            val token = resp.token
+            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token"))
+            assertEquals(userId, validatedId)
+        }
+    }
+
+    @Test
     fun passwordSignInTest() {
         val client = buildClient()
         runBlocking {
@@ -71,6 +97,29 @@ class ApiTest {
 
             val signInResp = client.callApi(signIn, Unit, PasswordSignInRequest(
                     email = email,
+                    password = password
+            ))
+            assertEquals(userId, signInResp.id)
+
+            val token = signInResp.token
+            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token"))
+            assertEquals(userId, validatedId)
+        }
+    }
+
+    @Test
+    fun passwordSignInWithWhitespace() {
+        val client = buildClient()
+        runBlocking {
+            val email = genEmail()
+            val password = "password1"
+            val userId = client.callApi(register, Unit, PasswordRegistrationRequest(
+                    email = email,
+                    password = password
+            )).id
+
+            val signInResp = client.callApi(signIn, Unit, PasswordSignInRequest(
+                    email = "\t$email  \n",
                     password = password
             ))
             assertEquals(userId, signInResp.id)
