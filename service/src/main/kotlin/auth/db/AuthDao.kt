@@ -45,7 +45,7 @@ class AuthDao @Inject constructor() {
                 .await()
                 .groupBy { it.authUserId }
                 .values
-                .any { names -> names.maxBy { it.effectiveDt }!!.displayName.equals(name, ignoreCase = true) }
+                .any { names -> names.maxByOrNull { it.effectiveDt }!!.displayName.equals(name, ignoreCase = true) }
     }
 
     suspend fun setDisplayName(dsl: DSLContext, userId: UUID, newName: String?) {

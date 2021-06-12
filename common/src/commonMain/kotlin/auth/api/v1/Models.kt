@@ -7,13 +7,14 @@ import multiplatform.UUIDSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 
 val authModule = SerializersModule {
-    polymorphic<SignInRequest> {
-        PasswordSignInRequest::class with PasswordSignInRequest.serializer()
+    polymorphic(SignInRequest::class) {
+        subclass(PasswordSignInRequest::class, PasswordSignInRequest.serializer())
     }
-    polymorphic<RegistrationRequest> {
-        PasswordRegistrationRequest::class with PasswordRegistrationRequest.serializer()
+    polymorphic(RegistrationRequest::class) {
+        subclass(PasswordRegistrationRequest::class, PasswordRegistrationRequest.serializer())
     }
 }
 

@@ -32,7 +32,7 @@ class AuthModule(private val config: AuthConfig) {
     @Provides
     @Singleton
     fun json(): Json {
-        return Json(context = authModule)
+        return Json { serializersModule = authModule }
     }
 
     @Provides

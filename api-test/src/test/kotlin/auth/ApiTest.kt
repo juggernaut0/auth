@@ -8,9 +8,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import multiplatform.ktor.JsonSerialization
-import multiplatform.ktor.callApi
+import multiplatform.ktor.*
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,7 +25,7 @@ class ApiTest {
             ))
             val userId = resp.id
             val token = resp.token
-            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token"))
+            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders())
             assertEquals(userId, validatedId)
         }
     }
@@ -53,7 +51,7 @@ class ApiTest {
             // First token should still be valid
             val userId = resp.id
             val token = resp.token
-            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token"))
+            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders())
             assertEquals(userId, validatedId)
         }
     }
@@ -79,7 +77,7 @@ class ApiTest {
             // First token should still be valid
             val userId = resp.id
             val token = resp.token
-            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token"))
+            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders())
             assertEquals(userId, validatedId)
         }
     }
@@ -102,7 +100,7 @@ class ApiTest {
             assertEquals(userId, signInResp.id)
 
             val token = signInResp.token
-            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token"))
+            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders())
             assertEquals(userId, validatedId)
         }
     }
@@ -125,7 +123,7 @@ class ApiTest {
             assertEquals(userId, signInResp.id)
 
             val token = signInResp.token
-            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token"))
+            val validatedId = client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders())
             assertEquals(userId, validatedId)
         }
     }
@@ -176,7 +174,7 @@ class ApiTest {
         runBlocking {
             assertFails {
                 val token = "ThisIsNotARealToken.NoReallyItIsnt.NotEvenSignedProperly"
-                client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token"))
+                client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders())
             }
         }
     }
@@ -187,7 +185,7 @@ class ApiTest {
             return "test+$id@example.com"
         }
 
-        fun buildClient(): HttpClient {
+        fun buildClient(): KtorApiClient {
             return HttpClient(Apache) {
                 defaultRequest {
                     url {
@@ -195,10 +193,10 @@ class ApiTest {
                         port = 9001
                     }
                 }
-                install(JsonSerialization) {
-                    json = Json(JsonConfiguration.Stable, context = authModule)
+                install(JsonSerializationClientFeature) {
+                    json = Json { serializersModule = authModule }
                 }
-            }
+            }.let { KtorApiClient(it) }
         }
     }
 }

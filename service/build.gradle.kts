@@ -8,7 +8,7 @@ plugins {
     application
     id("nu.studer.jooq") version "4.1"
     kotlin("kapt")
-    id("com.bmuschko.docker-remote-api") version "6.1.1"
+    id("com.bmuschko.docker-remote-api") version "6.7.0"
 }
 
 dependencies {
@@ -16,7 +16,7 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
 
-    val ktorVersion = "1.2.6"
+    val ktorVersion = "1.6.0"
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-jetty:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
@@ -24,11 +24,11 @@ dependencies {
     implementation("io.ktor:ktor-html-builder:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
-    val daggerVersion = "2.25.4"
+    val daggerVersion = "2.36"
     implementation("com.google.dagger:dagger:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
 
-    implementation("io.github.config4k:config4k:0.4.1")
+    implementation("io.github.config4k:config4k:0.4.2")
 
     implementation("ch.qos.logback:logback-classic:1.2.3")
 
@@ -79,7 +79,7 @@ tasks {
         }
     }
 
-    run.invoke {
+    (run) {
         systemProperty("config.file", "local.conf")
     }
 }

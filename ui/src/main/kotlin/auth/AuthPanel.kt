@@ -5,17 +5,16 @@ import auth.api.v1.PasswordRegistrationRequest
 import auth.api.v1.PasswordSignInRequest
 import auth.api.v1.authModule
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kui.*
 import multiplatform.FetchException
 import multiplatform.call
 import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLStyleElement
-import kotlin.browser.document
-import kotlin.browser.window
+import kotlinx.browser.document
+import kotlinx.browser.window
 
 class AuthPanel : Component() {
-    private val json = Json(JsonConfiguration.Stable.copy(strictMode = false), context = authModule)
+    private val json = Json { ignoreUnknownKeys = false; serializersModule = authModule }
 
     private var registrationMode: Boolean by renderOnSet(false)
 

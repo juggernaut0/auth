@@ -5,13 +5,17 @@ plugins {
     `maven-publish`
 }
 
+kotlin {
+    js {
+        browser()
+    }
+}
+
 dependencies {
     api(project(":auth-common"))
 
-    implementation(kotlin("stdlib-js"))
-
-    api("com.github.juggernaut0.kui:kui:0.10.0")
-    implementation("com.github.juggernaut0:async-lite:0.1.0")
+    api("com.github.juggernaut0.kui:kui:0.11.0")
+    implementation("com.github.juggernaut0:async-lite:0.2.0")
 }
 
 tasks.withType<Kotlin2JsCompile>().forEach {
