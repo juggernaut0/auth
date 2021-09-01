@@ -7,14 +7,14 @@ import auth.api.v1.authModule
 import kotlinx.serialization.json.Json
 import kui.*
 import multiplatform.FetchException
-import multiplatform.call
 import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLStyleElement
 import kotlinx.browser.document
 import kotlinx.browser.window
+import multiplatform.api.FetchClient
 
 class AuthPanel : Component() {
-    private val json = Json { ignoreUnknownKeys = false; serializersModule = authModule }
+    private val apiClient = FetchClient(json = Json { ignoreUnknownKeys = false; serializersModule = authModule })
 
     private var registrationMode: Boolean by renderOnSet(false)
 
@@ -43,7 +43,7 @@ class AuthPanel : Component() {
         async {
             try {
                 val req = PasswordRegistrationRequest(email, displayName.takeIf { it.isNotBlank() }, password)
-                val user = auth.api.v1.register.call(req, Unit, json = json)
+                val user = apiClient.callApi(auth.api.v1.register, Unit, req)
                 setToken(user.token)
                 (document.getElementById("reg-form") as HTMLFormElement).submit() // reloads the page on chrome
                 window.location.reload()
@@ -64,7 +64,7 @@ class AuthPanel : Component() {
 
         async {
             try {
-                val user = auth.api.v1.signIn.call(PasswordSignInRequest(email, password), Unit, json = json)
+                val user = apiClient.callApi(auth.api.v1.signIn, Unit, PasswordSignInRequest(email, password))
                 setToken(user.token)
                 (document.getElementById("signin-form") as HTMLFormElement).submit() // reloads the page on chrome
                 window.location.reload()

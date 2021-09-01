@@ -11,11 +11,11 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     implementation("org.postgresql:postgresql:42.2.5")
-    implementation("org.flywaydb:flyway-core:6.2.3")
+    implementation("org.flywaydb:flyway-core:7.14.0")
 }
 
 application {
-    mainClassName = "MigrateKt"
+    mainClass.set("auth.MigrateKt")
 }
 
 tasks {

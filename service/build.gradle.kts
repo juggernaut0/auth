@@ -6,17 +6,18 @@ plugins {
     kotlin("jvm")
     java
     application
-    id("nu.studer.jooq") version "4.1"
+    id("nu.studer.jooq") version "5.2.1"
     kotlin("kapt")
     id("com.bmuschko.docker-remote-api") version "6.7.0"
 }
 
 dependencies {
     implementation(project(":auth-common"))
+    implementation(project(":dbmigrate"))
 
     implementation(kotlin("stdlib-jdk8"))
 
-    val ktorVersion = "1.6.0"
+    val ktorVersion = "1.6.2"
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-jetty:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
@@ -24,18 +25,19 @@ dependencies {
     implementation("io.ktor:ktor-html-builder:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
-    val daggerVersion = "2.36"
+    val daggerVersion = "2.38.1"
     implementation("com.google.dagger:dagger:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
 
     implementation("io.github.config4k:config4k:0.4.2")
 
-    implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("ch.qos.logback:logback-classic:1.2.5")
 
-    implementation("org.postgresql:postgresql:42.2.5")
-    implementation("org.jooq:jooq:3.12.3")
-    jooqRuntime("org.postgresql:postgresql:42.2.5")
-    implementation("com.zaxxer:HikariCP:3.2.0")
+    implementation("org.jooq:jooq:3.15.1")
+    jooqGenerator("org.postgresql:postgresql:42.2.23")
+    implementation("io.r2dbc:r2dbc-postgresql:0.8.8.RELEASE")
+    implementation("io.r2dbc:r2dbc-pool:0.8.7.RELEASE")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.5.1")
 
     implementation("at.favre.lib:bcrypt:0.9.0")
 
@@ -43,16 +45,51 @@ dependencies {
 }
 
 application {
-    mainClassName = "auth.MainKt"
+    mainClass.set("auth.MainKt")
 }
 
-apply {
-    from("jooq.gradle")
+jooq {
+    configurations {
+        create("main") {
+            version.set("3.15.1")
+            generateSchemaSourceOnCompilation.set(true)
+            jooqConfiguration.apply {
+                jdbc.apply {
+                    driver = "org.postgresql.Driver"
+                    url = "jdbc:postgresql://localhost:6432/auth"
+                    user = "auth"
+                    password = "auth"
+                }
+                generator.apply {
+                    name = "org.jooq.codegen.DefaultGenerator"
+                    strategy.apply {
+                        name = "org.jooq.codegen.DefaultGeneratorStrategy"
+                    }
+                    database.apply {
+                        name = "org.jooq.meta.postgres.PostgresDatabase"
+                        inputSchema = "public"
+                        includes = ".*"
+                        excludes = "flyway_schema_history"
+                    }
+                    generate.apply {
+                        isRelations = true
+                        isDeprecated = false
+                        isRecords = true
+                        isFluentSetters = false
+                    }
+                    target.apply {
+                        packageName = "auth.db.jooq"
+                        directory = "build/generated/source/jooq/main"
+                    }
+                }
+            }
+        }
+    }
 }
+
 tasks {
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
-        dependsOn("generatePostgresJooqSchemaSource")
+        kotlinOptions.jvmTarget = "11"
     }
 
     val copyDist by registering(Copy::class) {

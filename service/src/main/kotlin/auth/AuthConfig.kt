@@ -7,10 +7,10 @@ class AuthConfig(
 )
 
 class DataConfig(
-        val dataSourceClassName: String,
         val user: String,
         val password: String,
-        val jdbcUrl: String
+        val jdbcUrl: String,
+        val r2dbcUrl: String,
 )
 
 class AppConfig(
