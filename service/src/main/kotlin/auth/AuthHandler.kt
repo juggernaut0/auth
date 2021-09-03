@@ -92,8 +92,11 @@ class AuthHandler @Inject constructor(
 
     suspend fun lookup(params: LookupParams, principal: Principal?): UserInfo? {
         return database.transaction { dsl ->
-            val userId = params.id ?: extractSubject(principal)
-            dao.lookupUserInfo(dsl, id = userId, name = params.name)?.let { (id, name) -> UserInfo(id, name) }
+            if (params.id == null && params.name == null) {
+                dao.lookupUserInfo(dsl, id = extractSubject(principal))
+            } else {
+                dao.lookupUserInfo(dsl, id = params.id, name = params.name)
+            }?.let { (id, name) -> UserInfo(id, name) }
         }
     }
 

@@ -217,6 +217,40 @@ class ApiTest {
         }
     }
 
+    @Test
+    fun lookupAnother() {
+        val client = buildClient()
+        runBlocking {
+            val displayName = "test${Random.nextInt()}"
+            val user = client.callApi(register, Unit, PasswordRegistrationRequest(
+                email = genEmail(),
+                password = "password1",
+                displayName = displayName,
+            ))
+
+            val token = client.callApi(register, Unit, PasswordRegistrationRequest(
+                email = genEmail(),
+                password = "password1",
+            )).token
+
+            run {
+                val headers = headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders()
+                val userInfo = client.callApi(lookup, LookupParams(id = user.id), headers = headers)
+                assertNotNull(userInfo)
+                assertEquals(user.id, userInfo.id)
+                assertEquals(displayName, userInfo.displayName)
+            }
+
+            run {
+                val headers = headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders()
+                val userInfo = client.callApi(lookup, LookupParams(name = displayName), headers = headers)
+                assertNotNull(userInfo)
+                assertEquals(user.id, userInfo.id)
+                assertEquals(displayName, userInfo.displayName)
+            }
+        }
+    }
+
     companion object {
         fun genEmail(): String {
             val id = Random.nextInt()
