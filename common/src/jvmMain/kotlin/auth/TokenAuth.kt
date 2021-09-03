@@ -9,7 +9,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.http.headersOf
 import io.ktor.response.respond
-import multiplatform.ktor.callApi
+import multiplatform.ktor.KtorApiClient
+import multiplatform.ktor.toMultiplatformHeaders
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.net.ConnectException
@@ -42,10 +43,13 @@ fun Authentication.Configuration.token(name: String? = null, httpClient: HttpCli
     register(provider)
 }
 
-class TokenAuthProvider(private val configuration: Configuration) : AuthenticationProvider(configuration) {
+class TokenAuthProvider(configuration: Configuration) : AuthenticationProvider(configuration) {
+    private val client = KtorApiClient(configuration.httpClient)
+
     suspend fun validate(token: String): ValidatedToken? {
         val id = try {
-            configuration.httpClient.callApi(auth.api.v1.validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token"))
+            val headers = headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders()
+            client.callApi(auth.api.v1.validate, Unit, headers = headers)
         } catch (e: Exception) {
             when (e) {
                 is ClientRequestException, is ConnectException -> log.warn("Failed to validate token", e)

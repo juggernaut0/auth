@@ -6,7 +6,6 @@ import auth.domain.AuthProvider
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.future.await
 import kotlinx.coroutines.reactive.asFlow
 import org.jooq.DSLContext
 import org.jooq.Record2
@@ -67,5 +66,51 @@ class AuthDao @Inject constructor() {
             .where(DSL.lower(AUTH_USER.EMAIL).eq(DSL.lower(email.trim())))
             .asFlow()
             .firstOrNull()
+    }
+
+    suspend fun lookupUserInfo(dsl: DSLContext, id: UUID? = null, name: String? = null): Pair<UUID, String?>? {
+        if (id == null && name == null) return null
+
+        val lookupId = when {
+            id != null -> {
+                val userExists =
+                    dsl.selectCount()
+                        .from(AUTH_USER)
+                        .where(AUTH_USER.ID.eq(id))
+                        .asFlow()
+                        .single()
+                        .value1() > 0
+
+                if (!userExists) return null
+                id
+            }
+            name != null -> lookupIdByName(dsl, name)
+            else -> null
+        } ?: return null
+
+        val lookupName = name ?: lookupNameById(dsl, lookupId)
+
+        return (lookupId to lookupName)
+            .takeIf { name == null || name == lookupName }
+    }
+
+    private suspend fun lookupNameById(dsl: DSLContext, id: UUID): String? {
+        return dsl.select(USER_DISPLAY_NAME.DISPLAY_NAME)
+            .from(USER_DISPLAY_NAME)
+            .where(USER_DISPLAY_NAME.AUTH_USER_ID.eq(id))
+            .orderBy(USER_DISPLAY_NAME.EFFECTIVE_DT.desc())
+            .asFlow()
+            .firstOrNull()
+            ?.value1()
+    }
+
+    private suspend fun lookupIdByName(dsl: DSLContext, name: String): UUID? {
+        return dsl.select(USER_DISPLAY_NAME.AUTH_USER_ID)
+            .from(USER_DISPLAY_NAME)
+            .where(USER_DISPLAY_NAME.DISPLAY_NAME.eq(name))
+            .orderBy(USER_DISPLAY_NAME.EFFECTIVE_DT.desc())
+            .asFlow()
+            .firstOrNull()
+            ?.value1()
     }
 }

@@ -1,4 +1,4 @@
 # Auth
 
 ## TODO
-* Implement lookup route
+* Export styles as scss module

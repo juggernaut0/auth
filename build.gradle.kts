@@ -5,7 +5,7 @@ plugins {
 
 subprojects {
     group = "dev.twarner.auth"
-    version = "4"
+    version = "5"
 
     repositories {
         mavenLocal()

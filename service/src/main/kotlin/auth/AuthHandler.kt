@@ -5,7 +5,7 @@ import auth.db.AuthDao
 import auth.db.Database
 import auth.domain.PasswordHasher
 import auth.domain.TokenGenerator
-import io.ktor.auth.authenticate
+import io.ktor.auth.*
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.routing.Route
 import multiplatform.ktor.BadRequestException
@@ -18,9 +18,13 @@ import javax.inject.Inject
 fun Route.registerRoutes(handler: AuthHandler) {
     handleApi(register) { handler.register(it) }
     handleApi(signIn) { handler.signIn(it) }
-    //handleApi(lookup) { handler.lookup(params) } // TODO
+    authenticate(optional = true) {
+        handleApi(lookup) {
+            handler.lookup(params, auth)
+        }
+    }
     authenticate {
-        handleApi(validate) { UUID.fromString((auth as JWTPrincipal).payload.subject) }
+        handleApi(validate) { handler.extractSubject(auth) ?: error("Invalid principal") }
     }
 }
 
@@ -30,6 +34,10 @@ class AuthHandler @Inject constructor(
         private val passwordHasher: PasswordHasher,
         private val tokenGenerator: TokenGenerator
 ) {
+    fun extractSubject(principal: Principal?): UUID? {
+        return (principal ?: return null).let { it as JWTPrincipal }.payload.subject.let { UUID.fromString(it) }
+    }
+
     suspend fun register(registrationRequest: RegistrationRequest): AuthenticatedUser {
         return when (registrationRequest) {
             is PasswordRegistrationRequest -> {
@@ -79,6 +87,13 @@ class AuthHandler @Inject constructor(
             } else {
                 null
             }
+        }
+    }
+
+    suspend fun lookup(params: LookupParams, principal: Principal?): UserInfo? {
+        return database.transaction { dsl ->
+            val userId = params.id ?: extractSubject(principal)
+            dao.lookupUserInfo(dsl, id = userId, name = params.name)?.let { (id, name) -> UserInfo(id, name) }
         }
     }
 

@@ -13,6 +13,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
+import kotlin.test.assertNotNull
 
 class ApiTest {
     @Test
@@ -175,6 +176,43 @@ class ApiTest {
             assertFails {
                 val token = "ThisIsNotARealToken.NoReallyItIsnt.NotEvenSignedProperly"
                 client.callApi(validate, Unit, headers = headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders())
+            }
+        }
+    }
+
+    @Test
+    fun lookup() {
+        val client = buildClient()
+        runBlocking {
+            val email = genEmail()
+            val password = "password1"
+            val displayName = "test${Random.nextInt()}"
+            val user = client.callApi(register, Unit, PasswordRegistrationRequest(
+                email = email,
+                password = password,
+                displayName = displayName,
+            ))
+
+            run {
+                val headers = headersOf(HttpHeaders.Authorization, "Bearer ${user.token}").toMultiplatformHeaders()
+                val userInfo = client.callApi(lookup, LookupParams(), headers = headers)
+                assertNotNull(userInfo)
+                assertEquals(user.id, userInfo.id)
+                assertEquals(displayName, userInfo.displayName)
+            }
+
+            run {
+                val userInfo = client.callApi(lookup, LookupParams(id = user.id))
+                assertNotNull(userInfo)
+                assertEquals(user.id, userInfo.id)
+                assertEquals(displayName, userInfo.displayName)
+            }
+
+            run {
+                val userInfo = client.callApi(lookup, LookupParams(name = displayName))
+                assertNotNull(userInfo)
+                assertEquals(user.id, userInfo.id)
+                assertEquals(displayName, userInfo.displayName)
             }
         }
     }
