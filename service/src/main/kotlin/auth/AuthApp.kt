@@ -1,5 +1,6 @@
 package auth
 
+import auth.api.v1.getGoogleClientId
 import com.auth0.jwt.JWTVerifier
 import io.ktor.application.install
 import io.ktor.auth.Authentication
@@ -12,18 +13,19 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.jetty.Jetty
 import kotlinx.serialization.json.Json
 import multiplatform.ktor.JsonSerializationFeature
+import multiplatform.ktor.handleApi
 import multiplatform.ktor.installWebApplicationExceptionHandler
 import org.slf4j.event.Level
 import javax.inject.Inject
 
 class AuthApp @Inject constructor(
-        private val appConfig: AppConfig,
         private val appJson: Json,
+        private val config: AuthConfig,
         private val handler: AuthHandler,
         private val jwtVerifier: JWTVerifier
 ) {
     fun start() {
-        embeddedServer(Jetty, appConfig.port) {
+        embeddedServer(Jetty, config.app.port) {
             install(CallLogging) {
                 level = Level.INFO
             }
@@ -41,6 +43,7 @@ class AuthApp @Inject constructor(
             }
             routing {
                 registerRoutes(handler)
+                handleApi(getGoogleClientId) { config.google.clientId }
             }
         }.start(wait = true)
     }

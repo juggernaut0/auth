@@ -8,6 +8,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import multiplatform.api.Headers
 import multiplatform.ktor.*
 import kotlin.random.Random
 import kotlin.test.Test
@@ -251,6 +252,48 @@ class ApiTest {
         }
     }
 
+    @Test
+    fun googleSignInBasic() {
+        val client = buildClient()
+        runBlocking {
+            val id1 = run {
+                val user = client.callApi(signIn, Unit, GoogleSignInRequest("test.token"))
+                val userId = user.id
+                val token = user.token
+                val validatedId = client.callApi(validate, Unit, headers = authorizationHeaders(token))
+                assertEquals(userId, validatedId)
+                userId
+            }
+
+            val id2 = run {
+                val user = client.callApi(signIn, Unit, GoogleSignInRequest("test.token"))
+                val userId = user.id
+                val token = user.token
+                val validatedId = client.callApi(validate, Unit, headers = authorizationHeaders(token))
+                assertEquals(userId, validatedId)
+                userId
+            }
+
+            assertEquals(id1, id2)
+        }
+    }
+
+    @Test
+    fun googleSignInExisting() {
+        val client = buildClient()
+        runBlocking {
+            val email = genEmail()
+            client.callApi(register, Unit, PasswordRegistrationRequest(
+                email = email,
+                password = "password1"
+            ))
+
+            assertFails {
+                client.callApi(signIn, Unit, GoogleSignInRequest(email)) // verifier mock uses whole token as email
+            }
+        }
+    }
+
     companion object {
         fun genEmail(): String {
             val id = Random.nextInt()
@@ -269,6 +312,10 @@ class ApiTest {
                     json = Json { serializersModule = authModule }
                 }
             }.let { KtorApiClient(it) }
+        }
+
+        private fun authorizationHeaders(token: String): Headers {
+            return headersOf(HttpHeaders.Authorization, "Bearer $token").toMultiplatformHeaders()
         }
     }
 }

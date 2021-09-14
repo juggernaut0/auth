@@ -17,7 +17,7 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
 
-    val ktorVersion = "1.6.2"
+    val ktorVersion = "1.6.3"
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-jetty:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
@@ -33,13 +33,14 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:1.2.5")
 
-    implementation("org.jooq:jooq:3.15.1")
     jooqGenerator("org.postgresql:postgresql:42.2.23")
     implementation("io.r2dbc:r2dbc-postgresql:0.8.8.RELEASE")
     implementation("io.r2dbc:r2dbc-pool:0.8.7.RELEASE")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.5.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.5.2")
 
     implementation("at.favre.lib:bcrypt:0.9.0")
+
+    implementation("com.google.api-client:google-api-client:1.32.1")
 
     testImplementation(kotlin("test-junit"))
 }
@@ -51,7 +52,7 @@ application {
 jooq {
     configurations {
         create("main") {
-            version.set("3.15.1")
+            version.set("3.15.2")
             generateSchemaSourceOnCompilation.set(true)
             jooqConfiguration.apply {
                 jdbc.apply {

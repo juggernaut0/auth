@@ -12,23 +12,27 @@ import kotlinx.serialization.modules.polymorphic
 val authModule = SerializersModule {
     polymorphic(SignInRequest::class) {
         subclass(PasswordSignInRequest::class, PasswordSignInRequest.serializer())
+        subclass(GoogleSignInRequest::class, GoogleSignInRequest.serializer())
     }
     polymorphic(RegistrationRequest::class) {
         subclass(PasswordRegistrationRequest::class, PasswordRegistrationRequest.serializer())
     }
 }
 
-interface SignInRequest {
-    val email: String
-}
+sealed interface SignInRequest
 
 @Serializable
 class PasswordSignInRequest(
-        override val email: String,
+        val email: String,
         val password: String
 ) : SignInRequest
 
-interface RegistrationRequest {
+@Serializable
+class GoogleSignInRequest(
+    val googleToken: String,
+) : SignInRequest
+
+sealed interface RegistrationRequest {
     val email: String
     val displayName: String?
 }

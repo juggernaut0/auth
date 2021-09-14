@@ -1,9 +1,9 @@
 package auth
 
 import asynclite.async
-import auth.api.v1.PasswordRegistrationRequest
-import auth.api.v1.PasswordSignInRequest
-import auth.api.v1.authModule
+import auth.api.v1.*
+import gsi.CredentialResponse
+import gsi.google
 import kotlinx.serialization.json.Json
 import kui.*
 import multiplatform.FetchException
@@ -26,6 +26,21 @@ class AuthPanel : Component() {
     private var errorText: String? by renderOnSet(null)
 
     private var submitting by renderOnSet(false)
+
+    private val gsiRef = ElementRef()
+    private var gsiInit = false
+
+    init {
+        async {
+            val clientId = apiClient.callApi(getGoogleClientId, Unit)
+            google.accounts.id.initialize(object {
+                val client_id = clientId
+                val callback = ::googleSignIn
+            })
+            gsiInit = true
+            render()
+        }
+    }
 
     private fun register() {
         if (email.isEmpty() || password.isEmpty()) {
@@ -75,6 +90,21 @@ class AuthPanel : Component() {
         }
     }
 
+    private fun googleSignIn(response: CredentialResponse) {
+        submitting = true
+
+        async {
+            try {
+                val user = apiClient.callApi(auth.api.v1.signIn, Unit, GoogleSignInRequest(response.credential))
+                setToken(user.token)
+                window.location.reload()
+            } catch (e: FetchException) {
+                errorText = "Google sign in failed. Try signing in via another method."
+                submitting = false
+            }
+        }
+    }
+
     override fun render() {
         markup().div(classes("signin-container")) {
             div(classes("signin-header-box")) {
@@ -93,6 +123,17 @@ class AuthPanel : Component() {
                     signInForm()
                 }
             }
+        }
+        if (gsiInit) {
+            window.setTimeout({
+                google.accounts.id.renderButton(gsiRef.get(), object {
+                    val theme = "outline"
+                    val text = "continue_with"
+                    val size = "large"
+                    val logo_alignment = "center"
+                    val width = "100%"
+                })
+            })
         }
     }
 
@@ -129,6 +170,7 @@ class AuthPanel : Component() {
         )) {
             +"Create an account"
         }
+        div(Props(classes = listOf("signin-google-container"), ref = gsiRef)) {}
     }
 
     private fun MarkupBuilder.registrationForm() {
@@ -270,6 +312,12 @@ class AuthPanel : Component() {
                 
                 .signin-errortext {
                     color: #c20;
+                }
+                
+                .signin-google-container {
+                    display: flex;
+                    justify-content: center;
+                    margin-top: 0.5rem;
                 }
             """.trimIndent())
         }

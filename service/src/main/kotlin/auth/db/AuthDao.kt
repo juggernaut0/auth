@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import org.jooq.DSLContext
-import org.jooq.Record2
 import org.jooq.impl.DSL
 import java.time.LocalDateTime
 import java.util.*
@@ -28,6 +27,28 @@ class AuthDao @Inject constructor() {
             .set(USER_PASS.ID, UUID.randomUUID())
             .set(USER_PASS.AUTH_USER_ID, userId)
             .set(USER_PASS.HASHED_PASS, hashedPass)
+            .asFlow()
+            .single()
+
+        return dsl.selectFrom(AUTH_USER)
+            .where(AUTH_USER.ID.eq(userId))
+            .asFlow()
+            .single()
+    }
+
+    suspend fun createGoogleUser(dsl: DSLContext, email: String, googleId: String): AuthUserRecord {
+        val userId = UUID.randomUUID()
+        dsl.insertInto(AUTH_USER)
+            .set(AUTH_USER.ID, userId)
+            .set(AUTH_USER.EMAIL, email)
+            .set(AUTH_USER.PROVIDER, AuthProvider.GOOGLE)
+            .asFlow()
+            .single()
+
+        dsl.insertInto(GOOGLE_SIGNIN_DETAILS)
+            .set(GOOGLE_SIGNIN_DETAILS.ID, UUID.randomUUID())
+            .set(GOOGLE_SIGNIN_DETAILS.AUTH_USER_ID, userId)
+            .set(GOOGLE_SIGNIN_DETAILS.GOOGLE_ID, googleId)
             .asFlow()
             .single()
 
@@ -60,12 +81,20 @@ class AuthDao @Inject constructor() {
             .single()
     }
 
-    suspend fun getUserPassByEmail(dsl: DSLContext, email: String): Record2<UUID, String>? {
-        return dsl.select(AUTH_USER.ID, USER_PASS.HASHED_PASS)
-            .from(AUTH_USER.join(USER_PASS).onKey())
+    suspend fun getUserByEmail(dsl: DSLContext, email: String): AuthUserRecord? {
+        return dsl.selectFrom(AUTH_USER)
             .where(DSL.lower(AUTH_USER.EMAIL).eq(DSL.lower(email.trim())))
             .asFlow()
             .firstOrNull()
+    }
+
+    suspend fun getUserPassByUserId(dsl: DSLContext, userId: UUID): String? {
+        return dsl.select(USER_PASS.HASHED_PASS)
+            .from(USER_PASS)
+            .where(USER_PASS.AUTH_USER_ID.eq(userId))
+            .asFlow()
+            .firstOrNull()
+            ?.value1()
     }
 
     suspend fun lookupUserInfo(dsl: DSLContext, id: UUID? = null, name: String? = null): Pair<UUID, String?>? {

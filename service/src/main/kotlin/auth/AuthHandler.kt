@@ -3,6 +3,8 @@ package auth
 import auth.api.v1.*
 import auth.db.AuthDao
 import auth.db.Database
+import auth.domain.AuthProvider
+import auth.domain.GoogleTokenVerifier
 import auth.domain.PasswordHasher
 import auth.domain.TokenGenerator
 import io.ktor.auth.*
@@ -31,6 +33,7 @@ fun Route.registerRoutes(handler: AuthHandler) {
 class AuthHandler @Inject constructor(
         private val dao: AuthDao,
         private val database: Database,
+        private val googleTokenVerifier: GoogleTokenVerifier,
         private val passwordHasher: PasswordHasher,
         private val tokenGenerator: TokenGenerator
 ) {
@@ -64,14 +67,13 @@ class AuthHandler @Inject constructor(
                     AuthenticatedUser(userId, tokenGenerator.generate(userId))
                 }
             }
-            else -> throw BadRequestException("Unsupported registration type: ${registrationRequest::class}")
         }
     }
 
     suspend fun signIn(signInRequest: SignInRequest): AuthenticatedUser {
         return when (signInRequest) {
             is PasswordSignInRequest -> passwordSignIn(signInRequest)
-            else -> throw BadRequestException("Unsupported signIn type: ${signInRequest::class}")
+            is GoogleSignInRequest -> googleSignIn(signInRequest)
         } ?: throw BadRequestException("Sign in failed")
     }
 
@@ -81,8 +83,30 @@ class AuthHandler @Inject constructor(
         }
 
         return database.transaction { dsl ->
-            val (userId, hashedPass) = dao.getUserPassByEmail(dsl, signInRequest.email) ?: return@transaction null
+            val user = dao.getUserByEmail(dsl, signInRequest.email) ?: return@transaction null
+            if (!AuthProvider.containsProvider(user.provider, AuthProvider.PASSWORD)) return@transaction null
+            val hashedPass = dao.getUserPassByUserId(dsl, user.id) ?: return@transaction null
             if (passwordHasher.verify(signInRequest.password, hashedPass)) {
+                val userId = user.id
+                AuthenticatedUser(userId, tokenGenerator.generate(userId))
+            } else {
+                null
+            }
+        }
+    }
+
+    private suspend fun googleSignIn(signInRequest: GoogleSignInRequest): AuthenticatedUser? {
+        val verifiedToken = googleTokenVerifier.verify(signInRequest.googleToken) ?: return null
+
+        return database.transaction { dsl ->
+            val user = dao.getUserByEmail(dsl, verifiedToken.email)
+
+            if (user == null) {
+                val newUser = dao.createGoogleUser(dsl, verifiedToken.email, verifiedToken.googleId)
+                val userId = newUser.id
+                AuthenticatedUser(userId, tokenGenerator.generate(userId))
+            } else if (AuthProvider.containsProvider(user.provider, AuthProvider.GOOGLE)) {
+                val userId = user.id
                 AuthenticatedUser(userId, tokenGenerator.generate(userId))
             } else {
                 null

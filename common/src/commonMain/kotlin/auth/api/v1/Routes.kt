@@ -14,3 +14,4 @@ val register = ApiRoute(POST, pathOf(Unit.serializer(), "$PREFIX/account"), Auth
 val lookup = ApiRoute(GET, pathOf(LookupParams.serializer(), "$PREFIX/account?id={id}&name={name}"), UserInfo.serializer().nullable)
 val signIn = ApiRoute(POST, pathOf(Unit.serializer(), "$PREFIX/account/signin"), AuthenticatedUser.serializer(), PolymorphicSerializer(SignInRequest::class))
 val validate = ApiRoute(GET, pathOf(Unit.serializer(), "$PREFIX/validate"), UUIDSerializer)
+val getGoogleClientId = ApiRoute(GET, pathOf(Unit.serializer(), "$PREFIX/googleClientId"), String.serializer())
