@@ -8,7 +8,7 @@ plugins {
     application
     id("nu.studer.jooq") version "5.2.1"
     kotlin("kapt")
-    id("com.bmuschko.docker-remote-api") version "6.7.0"
+    id("com.bmuschko.docker-remote-api") version "7.3.0"
 }
 
 dependencies {
