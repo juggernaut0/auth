@@ -1,11 +1,11 @@
 plugins {
-    kotlin("multiplatform") version "1.5.30" apply false
-    kotlin("plugin.serialization") version "1.5.30" apply false
+    kotlin("multiplatform") version "1.6.20" apply false
+    kotlin("plugin.serialization") version "1.6.20" apply false
 }
 
 subprojects {
     group = "dev.twarner.auth"
-    version = "8"
+    version = "9"
 
     repositories {
         mavenLocal()

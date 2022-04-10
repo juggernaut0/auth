@@ -3,7 +3,7 @@ package auth
 import auth.api.v1.*
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.defaultRequest
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.http.HttpHeaders
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
@@ -308,7 +308,7 @@ class ApiTest {
                         port = 9001
                     }
                 }
-                install(JsonSerializationClientFeature) {
+                install(JsonSerializationClientPlugin) {
                     json = Json { serializersModule = authModule }
                 }
             }.let { KtorApiClient(it) }

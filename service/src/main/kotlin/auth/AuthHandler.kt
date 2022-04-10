@@ -7,9 +7,9 @@ import auth.domain.AuthProvider
 import auth.domain.GoogleTokenVerifier
 import auth.domain.PasswordHasher
 import auth.domain.TokenGenerator
-import io.ktor.auth.*
-import io.ktor.auth.jwt.JWTPrincipal
-import io.ktor.routing.Route
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.routing.Route
 import multiplatform.ktor.BadRequestException
 import multiplatform.ktor.handleApi
 import org.jooq.exception.DataAccessException

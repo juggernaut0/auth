@@ -1,7 +1,7 @@
 set -e
 
 ./gradlew dockerBuild
-docker run -it --rm \
+docker run --rm -d \
   --name auth \
   --network host \
   -v $PWD/service/local.conf:/app/local.conf \

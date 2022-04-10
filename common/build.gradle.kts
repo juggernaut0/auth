@@ -13,17 +13,27 @@ kotlin {
     }
 
     sourceSets {
-        val multiplatformUtilsVersion = "0.6.3"
+        val multiplatformUtilsVersion = "0.7.0"
 
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api("com.github.juggernaut0:multiplatform-utils:$multiplatformUtilsVersion")
             }
         }
 
-        val jvmMain by getting {
+        named("jvmMain") {
             dependencies {
                 api("com.github.juggernaut0:multiplatform-utils-ktor-jvm:$multiplatformUtilsVersion")
+            }
+        }
+
+        named("jvmTest") {
+            dependencies {
+                implementation(kotlin("test-junit"))
+                val ktorVersion = "2.0.0"
+                implementation("io.ktor:ktor-server-test-host:$ktorVersion")
+                implementation("io.ktor:ktor-client-mock:$ktorVersion")
+
             }
         }
     }

@@ -1,50 +1,46 @@
 package auth
 
-import io.ktor.application.call
-import io.ktor.auth.*
-import io.ktor.client.HttpClient
-import io.ktor.client.features.ClientRequestException
-import io.ktor.http.HttpHeaders
+import io.ktor.client.*
+import io.ktor.client.plugins.*
+import io.ktor.http.*
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.auth.HttpAuthHeader
-import io.ktor.http.headersOf
-import io.ktor.response.respond
+import io.ktor.http.auth.*
+import io.ktor.server.auth.*
+import io.ktor.server.response.respond
 import multiplatform.ktor.KtorApiClient
 import multiplatform.ktor.toMultiplatformHeaders
 import org.slf4j.LoggerFactory
-import java.lang.Exception
 import java.net.ConnectException
 import java.util.*
 
 class ValidatedToken(val userId: UUID): Principal
 
-fun Authentication.Configuration.token(name: String? = null, httpClient: HttpClient) {
+fun AuthenticationConfig.token(name: String? = null, httpClient: HttpClient) {
     val provider = TokenAuthProvider.Configuration(name, httpClient).build()
-    provider.pipeline.intercept(AuthenticationPipeline.RequestAuthentication) { context ->
-        val header = call.request.parseAuthorizationHeader()?.takeIf { it.authScheme == "Bearer" } as? HttpAuthHeader.Single
-        val principal = header?.let { provider.validate(it.blob) }
-
-        val cause = when {
-            header == null -> AuthenticationFailedCause.NoCredentials
-            principal == null -> AuthenticationFailedCause.InvalidCredentials
-            else -> null
-        }
-
-        if (cause != null) {
-            context.challenge("TokenAuth", cause) {
-                call.respond(HttpStatusCode.Unauthorized, "Missing or invalid authorization header")
-                it.complete()
-            }
-        } else {
-            context.principal(principal!!)
-        }
-    }
-
     register(provider)
 }
 
 class TokenAuthProvider(configuration: Configuration) : AuthenticationProvider(configuration) {
     private val client = KtorApiClient(configuration.httpClient)
+
+    override suspend fun onAuthenticate(context: AuthenticationContext) {
+        val header = context.call.request.parseAuthorizationHeader()?.takeIf { it.authScheme == "Bearer" } as? HttpAuthHeader.Single
+        val principal = header?.let { validate(it.blob) }
+
+        val cause = when {
+            header == null -> AuthenticationFailedCause.NoCredentials
+            principal == null -> AuthenticationFailedCause.InvalidCredentials
+            else -> {
+                context.principal(principal)
+                return
+            }
+        }
+
+        context.challenge("TokenAuth", cause) { challenge, call ->
+            call.respond(HttpStatusCode.Unauthorized, "Missing or invalid authorization header")
+            challenge.complete()
+        }
+    }
 
     suspend fun validate(token: String): ValidatedToken? {
         val id = try {
@@ -60,7 +56,7 @@ class TokenAuthProvider(configuration: Configuration) : AuthenticationProvider(c
         return ValidatedToken(id)
     }
 
-    class Configuration(name: String?, internal val httpClient: HttpClient) : AuthenticationProvider.Configuration(name) {
+    class Configuration(name: String?, internal val httpClient: HttpClient) : Config(name) {
         internal fun build(): TokenAuthProvider {
             return TokenAuthProvider(this)
         }
