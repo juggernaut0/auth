@@ -6,7 +6,7 @@ plugins {
     kotlin("jvm")
     java
     application
-    id("nu.studer.jooq") version "5.2.1"
+    id("nu.studer.jooq") version "7.1.1"
     kotlin("kapt")
     id("com.bmuschko.docker-remote-api") version "6.7.0"
 }
