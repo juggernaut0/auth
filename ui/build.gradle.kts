@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
     kotlin("js")
+    id("common-conventions")
     `maven-publish`
 }
 

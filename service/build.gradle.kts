@@ -4,11 +4,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
+    kotlin("kapt")
+    id("common-conventions")
     java
     application
-    id("nu.studer.jooq") version "5.2.1"
-    kotlin("kapt")
-    id("com.bmuschko.docker-remote-api") version "6.7.0"
+    id("nu.studer.jooq") version "7.1.1"
+    id("com.bmuschko.docker-remote-api") version "7.3.0"
 }
 
 dependencies {
@@ -92,7 +93,7 @@ jooq {
 
 tasks {
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "17"
     }
 
     val copyDist by registering(Copy::class) {
@@ -104,7 +105,7 @@ tasks {
     val dockerfile by registering(Dockerfile::class) {
         dependsOn(copyDist)
 
-        from("openjdk:11-jre-slim")
+        from("openjdk:17-slim")
         addFile(distTar.flatMap { it.archiveFileName }.map { Dockerfile.File(it, "/app/") })
         defaultCommand(distTar.flatMap { it.archiveFile }.map { it.asFile.nameWithoutExtension }.map { listOf("/app/$it/bin/${project.name}") })
     }

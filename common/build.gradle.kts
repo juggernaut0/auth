@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
+    id("common-conventions")
     `maven-publish`
 }
 
