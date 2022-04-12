@@ -28,22 +28,22 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
-    val daggerVersion = "2.38.1"
+    val daggerVersion = "2.41"
     implementation("com.google.dagger:dagger:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
 
     implementation("io.github.config4k:config4k:0.4.2")
 
-    implementation("ch.qos.logback:logback-classic:1.2.5")
+    implementation("ch.qos.logback:logback-classic:1.2.11")
 
-    jooqGenerator("org.postgresql:postgresql:42.2.23")
-    implementation("io.r2dbc:r2dbc-postgresql:0.8.8.RELEASE")
-    implementation("io.r2dbc:r2dbc-pool:0.8.7.RELEASE")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.5.2")
+    jooqGenerator("org.postgresql:postgresql:42.3.3")
+    implementation("io.r2dbc:r2dbc-postgresql:0.8.12.RELEASE")
+    implementation("io.r2dbc:r2dbc-pool:0.9.0.RELEASE")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.1")
 
     implementation("at.favre.lib:bcrypt:0.9.0")
 
-    implementation("com.google.api-client:google-api-client:1.32.1")
+    implementation("com.google.api-client:google-api-client:1.33.4")
 
     testImplementation(kotlin("test-junit"))
 }
