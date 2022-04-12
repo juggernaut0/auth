@@ -15,7 +15,7 @@ kotlin {
 dependencies {
     api(project(":auth-common"))
 
-    api("com.github.juggernaut0.kui:kui:0.12.0")
+    api("com.github.juggernaut0.kui:kui:0.14.1")
     implementation("com.github.juggernaut0:async-lite:0.2.0")
 }
 
