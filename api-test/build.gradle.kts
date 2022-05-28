@@ -6,7 +6,7 @@ plugins {
 dependencies {
     testImplementation(kotlin("test-junit"))
     testImplementation(project(":auth-common"))
-    testImplementation("io.ktor:ktor-client-apache:2.0.0")
+    testImplementation("io.ktor:ktor-client-apache:2.0.2")
 }
 
 tasks {
