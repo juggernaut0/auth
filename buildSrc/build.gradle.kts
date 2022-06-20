@@ -1,5 +1,6 @@
 plugins {
     `kotlin-dsl`
+    kotlin("jvm") version "1.7.0" // TODO remove when gradle updates built in kotlin
 }
 
 repositories {
@@ -7,6 +8,6 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21")
-    implementation("org.jetbrains.kotlin:kotlin-serialization:1.6.21")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0")
+    implementation("org.jetbrains.kotlin:kotlin-serialization:1.7.0")
 }
