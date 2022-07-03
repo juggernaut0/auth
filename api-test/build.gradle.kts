@@ -18,5 +18,6 @@ tasks {
         dependsOn("testClasses")
         testClassesDirs = sourceSets["test"].output.classesDirs
         classpath = sourceSets["test"].runtimeClasspath
+        outputs.upToDateWhen { false }
     }
 }
