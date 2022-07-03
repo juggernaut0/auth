@@ -7,7 +7,9 @@
     </appender>
 
     <logger name="auth" level="DEBUG"/>
-    <!--<logger name="org.jooq.tools.LoggerListener" level="DEBUG"/>-->
+    <!--<logger name="org.jooq.tools.LoggerListener" level="DEBUG"/>
+    <logger name="io.r2dbc.postgresql.QUERY" level="DEBUG"/>
+    <logger name="io.r2dbc.postgresql.PARAM" level="DEBUG"/>-->
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />

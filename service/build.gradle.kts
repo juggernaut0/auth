@@ -39,7 +39,7 @@ dependencies {
     jooqGenerator("org.postgresql:postgresql:42.4.0")
     implementation("io.r2dbc:r2dbc-postgresql:0.8.12.RELEASE")
     implementation("io.r2dbc:r2dbc-pool:0.9.0.RELEASE")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.3")
+    implementation("org.jooq:jooq-kotlin-coroutines")
 
     implementation("at.favre.lib:bcrypt:0.9.0")
 
@@ -55,7 +55,7 @@ application {
 jooq {
     configurations {
         create("main") {
-            version.set("3.15.2")
+            version.set("3.17.1")
             generateSchemaSourceOnCompilation.set(true)
             jooqConfiguration.apply {
                 jdbc.apply {
