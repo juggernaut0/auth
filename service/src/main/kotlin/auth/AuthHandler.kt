@@ -48,9 +48,9 @@ class AuthHandler @Inject constructor(
                     throw BadRequestException("Password must be between ${PASSWORD_LENGTH_RANGE.first} and ${PASSWORD_LENGTH_RANGE.last} characters")
                 }
                 val hashedPass = passwordHasher.hash(registrationRequest.password)
-                database.transaction { dsl ->
+                database.transaction {
                     val userId = try {
-                        dao.createPasswordUser(dsl, registrationRequest.email, hashedPass).id
+                        dao.createPasswordUser(registrationRequest.email, hashedPass).id
                     } catch (e: DataAccessException) {
                         if (e.sqlState() == "23505") { // unique_violation
                             throw BadRequestException("Failed to register")
@@ -59,10 +59,10 @@ class AuthHandler @Inject constructor(
                         }
                     }
                     registrationRequest.displayName?.takeIf { it.isNotBlank() }?.let { name ->
-                        if (dao.isNameTaken(dsl, name)) {
+                        if (dao.isNameTaken(name)) {
                             throw BadRequestException("Display name is taken")
                         }
-                        dao.setDisplayName(dsl, userId, name)
+                        dao.setDisplayName(userId, name)
                     }
                     AuthenticatedUser(userId, tokenGenerator.generate(userId))
                 }
@@ -82,10 +82,10 @@ class AuthHandler @Inject constructor(
             return null
         }
 
-        return database.transaction { dsl ->
-            val user = dao.getUserByEmail(dsl, signInRequest.email) ?: return@transaction null
+        return database.transaction {
+            val user = dao.getUserByEmail(signInRequest.email) ?: return@transaction null
             if (!AuthProvider.containsProvider(user.provider, AuthProvider.PASSWORD)) return@transaction null
-            val hashedPass = dao.getUserPassByUserId(dsl, user.id) ?: return@transaction null
+            val hashedPass = dao.getUserPassByUserId(user.id) ?: return@transaction null
             if (passwordHasher.verify(signInRequest.password, hashedPass)) {
                 val userId = user.id
                 AuthenticatedUser(userId, tokenGenerator.generate(userId))
@@ -98,11 +98,11 @@ class AuthHandler @Inject constructor(
     private suspend fun googleSignIn(signInRequest: GoogleSignInRequest): AuthenticatedUser? {
         val verifiedToken = googleTokenVerifier.verify(signInRequest.googleToken) ?: return null
 
-        return database.transaction { dsl ->
-            val user = dao.getUserByEmail(dsl, verifiedToken.email)
+        return database.transaction {
+            val user = dao.getUserByEmail(verifiedToken.email)
 
             if (user == null) {
-                val newUser = dao.createGoogleUser(dsl, verifiedToken.email, verifiedToken.googleId)
+                val newUser = dao.createGoogleUser(verifiedToken.email, verifiedToken.googleId)
                 val userId = newUser.id
                 AuthenticatedUser(userId, tokenGenerator.generate(userId))
             } else if (AuthProvider.containsProvider(user.provider, AuthProvider.GOOGLE)) {
@@ -115,11 +115,11 @@ class AuthHandler @Inject constructor(
     }
 
     suspend fun lookup(params: LookupParams, principal: Principal?): UserInfo? {
-        return database.transaction { dsl ->
+        return database.transaction {
             if (params.id == null && params.name == null) {
-                dao.lookupUserInfo(dsl, id = extractSubject(principal))
+                dao.lookupUserInfo(id = extractSubject(principal))
             } else {
-                dao.lookupUserInfo(dsl, id = params.id, name = params.name)
+                dao.lookupUserInfo(id = params.id, name = params.name)
             }?.let { (id, name) -> UserInfo(id, name) }
         }
     }

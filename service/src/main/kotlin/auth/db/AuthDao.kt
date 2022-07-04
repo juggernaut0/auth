@@ -14,7 +14,8 @@ import java.util.*
 import javax.inject.Inject
 
 class AuthDao @Inject constructor() {
-    suspend fun createPasswordUser(dsl: DSLContext, email: String, hashedPass: String): AuthUserRecord {
+    suspend fun createPasswordUser(email: String, hashedPass: String): AuthUserRecord {
+        val dsl = dslContext()
         val userId = UUID.randomUUID()
         dsl.insertInto(AUTH_USER)
             .set(AUTH_USER.ID, userId)
@@ -33,7 +34,8 @@ class AuthDao @Inject constructor() {
             .awaitSingle()
     }
 
-    suspend fun createGoogleUser(dsl: DSLContext, email: String, googleId: String): AuthUserRecord {
+    suspend fun createGoogleUser(email: String, googleId: String): AuthUserRecord {
+        val dsl = dslContext()
         val userId = UUID.randomUUID()
         dsl.insertInto(AUTH_USER)
             .set(AUTH_USER.ID, userId)
@@ -52,7 +54,8 @@ class AuthDao @Inject constructor() {
             .awaitSingle()
     }
 
-    suspend fun isNameTaken(dsl: DSLContext, name: String): Boolean {
+    suspend fun isNameTaken(name: String): Boolean {
+        val dsl = dslContext()
         val inner = DSL.selectDistinct(USER_DISPLAY_NAME.AUTH_USER_ID)
             .from(USER_DISPLAY_NAME)
             .where(DSL.lower(USER_DISPLAY_NAME.DISPLAY_NAME).eq(DSL.lower(name)))
@@ -65,7 +68,8 @@ class AuthDao @Inject constructor() {
             .any { names -> names.maxByOrNull { it.effectiveDt }!!.displayName.equals(name, ignoreCase = true) }
     }
 
-    suspend fun setDisplayName(dsl: DSLContext, userId: UUID, newName: String?) {
+    suspend fun setDisplayName(userId: UUID, newName: String?) {
+        val dsl = dslContext()
         dsl.insertInto(USER_DISPLAY_NAME)
             .set(USER_DISPLAY_NAME.ID, UUID.randomUUID())
             .set(USER_DISPLAY_NAME.AUTH_USER_ID, userId)
@@ -74,13 +78,15 @@ class AuthDao @Inject constructor() {
             .awaitSingle()
     }
 
-    suspend fun getUserByEmail(dsl: DSLContext, email: String): AuthUserRecord? {
+    suspend fun getUserByEmail(email: String): AuthUserRecord? {
+        val dsl = dslContext()
         return dsl.selectFrom(AUTH_USER)
             .where(DSL.lower(AUTH_USER.EMAIL).eq(DSL.lower(email.trim())))
             .awaitFirstOrNull()
     }
 
-    suspend fun getUserPassByUserId(dsl: DSLContext, userId: UUID): String? {
+    suspend fun getUserPassByUserId(userId: UUID): String? {
+        val dsl = dslContext()
         return dsl.select(USER_PASS.HASHED_PASS)
             .from(USER_PASS)
             .where(USER_PASS.AUTH_USER_ID.eq(userId))
@@ -88,9 +94,10 @@ class AuthDao @Inject constructor() {
             ?.value1()
     }
 
-    suspend fun lookupUserInfo(dsl: DSLContext, id: UUID? = null, name: String? = null): Pair<UUID, String?>? {
+    suspend fun lookupUserInfo(id: UUID? = null, name: String? = null): Pair<UUID, String?>? {
         if (id == null && name == null) return null
 
+        val dsl = dslContext()
         val lookupId = when {
             id != null -> {
                 val userExists =

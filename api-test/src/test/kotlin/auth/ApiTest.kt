@@ -3,18 +3,14 @@ package auth
 import auth.api.v1.*
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.http.HttpHeaders
-import io.ktor.http.headersOf
+import io.ktor.client.plugins.*
+import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import multiplatform.api.Headers
 import multiplatform.ktor.*
 import kotlin.random.Random
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFails
-import kotlin.test.assertNotNull
+import kotlin.test.*
 
 class ApiTest {
     @Test
@@ -288,9 +284,10 @@ class ApiTest {
                 password = "password1"
             ))
 
-            assertFails {
+            val e = assertFailsWith<ClientRequestException> {
                 client.callApi(signIn, Unit, GoogleSignInRequest(email)) // verifier mock uses whole token as email
             }
+            assertEquals(HttpStatusCode.BadRequest, e.response.status)
         }
     }
 
@@ -311,6 +308,7 @@ class ApiTest {
                 install(JsonSerializationClientPlugin) {
                     json = Json { serializersModule = authModule }
                 }
+                expectSuccess = true
             }.let { KtorApiClient(it) }
         }
 
