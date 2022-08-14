@@ -55,7 +55,7 @@ application {
 jooq {
     configurations {
         create("main") {
-            version.set("3.17.1")
+            version.set("3.17.2")
             generateSchemaSourceOnCompilation.set(true)
             jooqConfiguration.apply {
                 jdbc.apply {

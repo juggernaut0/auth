@@ -7,6 +7,7 @@ import kotlinx.coroutines.reactor.mono
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
+import org.jooq.kotlin.coroutines.transactionCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.AbstractCoroutineContextElement
@@ -18,7 +19,7 @@ class Database @Inject constructor(private val connectionFactory: ConnectionFact
     suspend fun <T> transaction(block: suspend CoroutineScope.() -> T): T {
         val dsl = DSL.using(connectionFactory, SQLDialect.POSTGRES)
         /*return dsl.transactionCoroutine {
-            coroutineScope { block(it.dsl()) }
+            withContext(DSLContextContext(it.dsl())) { block() }
         }*/
         return dsl.transactionPublisher {
             val ctx = it.dsl()
