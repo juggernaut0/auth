@@ -9,7 +9,7 @@ plugins {
     java
     application
     id("nu.studer.jooq") version "7.1.1"
-    id("com.bmuschko.docker-remote-api") version "7.4.0"
+    id("com.bmuschko.docker-remote-api") version "8.0.0"
 }
 
 dependencies {
@@ -18,7 +18,7 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
 
-    val ktorVersion = "2.0.2"
+    val ktorVersion = "2.1.0"
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-jetty:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
@@ -28,7 +28,7 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
-    val daggerVersion = "2.42"
+    val daggerVersion = "2.43.2"
     implementation("com.google.dagger:dagger:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
 
@@ -36,14 +36,14 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:1.2.11")
 
-    jooqGenerator("org.postgresql:postgresql:42.4.0")
+    jooqGenerator("org.postgresql:postgresql:42.4.1")
     implementation("io.r2dbc:r2dbc-postgresql:0.8.12.RELEASE")
-    implementation("io.r2dbc:r2dbc-pool:0.9.0.RELEASE")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.3")
+    implementation("io.r2dbc:r2dbc-pool:0.9.1.RELEASE")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
 
     implementation("at.favre.lib:bcrypt:0.9.0")
 
-    implementation("com.google.api-client:google-api-client:1.35.1")
+    implementation("com.google.api-client:google-api-client:2.0.0")
 
     testImplementation(kotlin("test-junit"))
 }

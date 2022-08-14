@@ -6,7 +6,7 @@ plugins {
 dependencies {
     testImplementation(kotlin("test-junit"))
     testImplementation(project(":auth-common"))
-    testImplementation("io.ktor:ktor-client-apache:2.0.2")
+    testImplementation("io.ktor:ktor-client-apache:2.1.0")
 }
 
 tasks {
@@ -18,5 +18,6 @@ tasks {
         dependsOn("testClasses")
         testClassesDirs = sourceSets["test"].output.classesDirs
         classpath = sourceSets["test"].runtimeClasspath
+        outputs.upToDateWhen { false }
     }
 }

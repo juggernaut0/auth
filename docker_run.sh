@@ -1,5 +1,6 @@
 set -e
 
+docker stop auth || true
 ./gradlew dockerBuild
 docker run --rm -d \
   --name auth \
