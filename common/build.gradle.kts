@@ -31,7 +31,7 @@ kotlin {
         named("jvmTest") {
             dependencies {
                 implementation(kotlin("test-junit"))
-                val ktorVersion = "2.1.0"
+                val ktorVersion = "2.1.1"
                 implementation("io.ktor:ktor-server-test-host:$ktorVersion")
                 implementation("io.ktor:ktor-client-mock:$ktorVersion")
 
