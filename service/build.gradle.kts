@@ -8,7 +8,7 @@ plugins {
     id("common-conventions")
     java
     application
-    id("nu.studer.jooq") version "7.1.1"
+    id("nu.studer.jooq") version "8.0"
     id("com.bmuschko.docker-remote-api") version "8.1.0"
 }
 
