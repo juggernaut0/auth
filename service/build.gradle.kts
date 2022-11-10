@@ -38,7 +38,7 @@ dependencies {
 
     jooqGenerator("org.postgresql:postgresql:42.5.0")
     implementation("io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE")
-    implementation("io.r2dbc:r2dbc-pool:0.9.2.RELEASE")
+    implementation("io.r2dbc:r2dbc-pool:1.0.0.RELEASE")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
 
     implementation("at.favre.lib:bcrypt:0.9.0")
