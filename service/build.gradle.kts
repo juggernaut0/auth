@@ -9,7 +9,7 @@ plugins {
     java
     application
     id("nu.studer.jooq") version "7.1.1"
-    id("com.bmuschko.docker-remote-api") version "8.1.0"
+    id("com.bmuschko.docker-remote-api") version "9.0.0"
 }
 
 dependencies {
