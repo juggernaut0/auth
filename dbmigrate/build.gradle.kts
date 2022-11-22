@@ -1,14 +1,14 @@
 plugins {
     kotlin("jvm")
-    id("common-conventions")
+    id("dev.twarner.common")
     application
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
-    implementation("org.postgresql:postgresql:42.5.0")
-    implementation("org.flywaydb:flyway-core:9.8.1")
+    implementation(libs.postgresql)
+    implementation(libs.flyway.core)
 }
 
 application {

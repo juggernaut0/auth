@@ -1,12 +1,13 @@
 plugins {
     kotlin("jvm")
-    id("common-conventions")
+    id("dev.twarner.common")
 }
 
 dependencies {
     testImplementation(kotlin("test-junit"))
     testImplementation(project(":auth-common"))
-    testImplementation("io.ktor:ktor-client-apache:2.1.3")
+    testImplementation(platform(libs.ktor.bom))
+    testImplementation(libs.ktor.client.apache)
 }
 
 tasks {

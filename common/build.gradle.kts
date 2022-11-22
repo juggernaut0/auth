@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("common-conventions")
+    id("dev.twarner.common")
     `maven-publish`
 }
 
@@ -12,32 +12,17 @@ kotlin {
     js {
         browser()
     }
+}
 
-    sourceSets {
-        val multiplatformUtilsVersion = "0.7.0"
+dependencies {
+    commonMainApi(libs.multiplatform.utils)
 
-        commonMain {
-            dependencies {
-                api("com.github.juggernaut0:multiplatform-utils:$multiplatformUtilsVersion")
-            }
-        }
+    "jvmMainApi"(libs.multiplatform.utils.ktor)
 
-        named("jvmMain") {
-            dependencies {
-                api("com.github.juggernaut0:multiplatform-utils-ktor-jvm:$multiplatformUtilsVersion")
-            }
-        }
-
-        named("jvmTest") {
-            dependencies {
-                implementation(kotlin("test-junit"))
-                val ktorVersion = "2.1.3"
-                implementation("io.ktor:ktor-server-test-host:$ktorVersion")
-                implementation("io.ktor:ktor-client-mock:$ktorVersion")
-
-            }
-        }
-    }
+    "jvmTestImplementation"(kotlin("test-junit"))
+    "jvmTestImplementation"(platform(libs.ktor.bom))
+    "jvmTestImplementation"(libs.ktor.server.testHost)
+    "jvmTestImplementation"(libs.ktor.client.mock)
 }
 
 tasks.withType<Kotlin2JsCompile> {

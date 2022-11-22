@@ -5,11 +5,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
     kotlin("kapt")
-    id("common-conventions")
+    id("dev.twarner.common")
     java
     application
-    id("nu.studer.jooq") version "8.0"
-    id("com.bmuschko.docker-remote-api") version "9.0.0"
+    alias(libs.plugins.jooq)
+    alias(libs.plugins.docker.api)
 }
 
 dependencies {
@@ -18,27 +18,22 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
 
-    val ktorVersion = "2.1.3"
-    implementation("io.ktor:ktor-server-core:$ktorVersion")
-    implementation("io.ktor:ktor-server-jetty:$ktorVersion")
-    implementation("io.ktor:ktor-server-auth:$ktorVersion")
-    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
-    implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
-    implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
-    implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation(platform(libs.ktor.bom))
+    implementation(libs.bundles.ktor.server.jetty)
+    implementation(libs.ktor.server.auth)
+    implementation("io.ktor:ktor-server-auth-jwt")
+    implementation("io.ktor:ktor-server-html-builder")
+    implementation(libs.ktor.client.cio)
 
-    val daggerVersion = "2.44.1"
-    implementation("com.google.dagger:dagger:$daggerVersion")
-    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
 
-    implementation("io.github.config4k:config4k:0.5.0")
+    implementation(libs.config4k)
 
-    implementation("ch.qos.logback:logback-classic:1.4.4")
+    implementation(libs.logback)
 
-    jooqGenerator("org.postgresql:postgresql:42.5.0")
-    implementation("io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE")
-    implementation("io.r2dbc:r2dbc-pool:1.0.0.RELEASE")
+    jooqGenerator(libs.postgresql)
+    implementation(libs.bundles.r2dbc.postgresql)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
 
     implementation("at.favre.lib:bcrypt:0.9.0")

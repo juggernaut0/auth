@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
     kotlin("js")
-    id("common-conventions")
+    id("dev.twarner.common")
     `maven-publish`
 }
 
@@ -15,7 +15,7 @@ kotlin {
 dependencies {
     api(project(":auth-common"))
 
-    api("com.github.juggernaut0.kui:kui:0.14.1")
+    api(libs.kui)
     implementation("com.github.juggernaut0:async-lite:0.2.0")
 }
 
