@@ -16,11 +16,11 @@ dependencies {
     api(project(":auth-common"))
 
     api(libs.kui)
-    implementation("com.github.juggernaut0:async-lite:0.2.0")
+    implementation(libs.asyncLite)
 }
 
-tasks.withType<Kotlin2JsCompile>().forEach {
-    it.kotlinOptions.moduleKind = "umd"
+tasks.withType<Kotlin2JsCompile>().configureEach {
+    kotlinOptions.moduleKind = "umd"
 }
 
 val sourcesJar by tasks.registering(Jar::class) {

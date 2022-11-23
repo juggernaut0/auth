@@ -86,7 +86,7 @@ jooq {
 }
 
 tasks {
-    withType<KotlinCompile> {
+    withType<KotlinCompile>().configureEach {
         kotlinOptions.jvmTarget = "17"
     }
 

@@ -16,7 +16,7 @@ application {
 }
 
 tasks {
-    run.invoke {
+    (run) {
         args = listOf("postgres://auth:auth@localhost:6432/auth")
     }
 }

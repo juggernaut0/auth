@@ -15,9 +15,9 @@ kotlin {
 }
 
 dependencies {
-    commonMainApi(libs.multiplatform.utils)
+    commonMainApi(libs.multiplatformUtils)
 
-    "jvmMainApi"(libs.multiplatform.utils.ktor)
+    "jvmMainApi"(libs.multiplatformUtils.ktor)
 
     "jvmTestImplementation"(kotlin("test-junit"))
     "jvmTestImplementation"(platform(libs.ktor.bom))
