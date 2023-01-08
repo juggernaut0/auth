@@ -6,7 +6,9 @@ pluginManagement {
     }
 
     plugins {
-        id("dev.twarner.common") version "0.3.2"
+        val twarnerVersion = "0.3.3"
+        id("dev.twarner.common") version twarnerVersion
+        id("dev.twarner.docker") version twarnerVersion
 
         val kotlinVersion = "1.8.0"
         kotlin("js") version kotlinVersion

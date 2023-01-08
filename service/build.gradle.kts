@@ -1,15 +1,13 @@
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
     kotlin("kapt")
     id("dev.twarner.common")
+    id("dev.twarner.docker")
     java
     application
     alias(libs.plugins.jooq)
-    alias(libs.plugins.docker.api)
 }
 
 dependencies {
@@ -86,34 +84,6 @@ jooq {
 }
 
 tasks {
-    withType<KotlinCompile>().configureEach {
-        kotlinOptions.jvmTarget = "17"
-    }
-
-    val copyDist by registering(Copy::class) {
-        dependsOn(distTar)
-        from(distTar.flatMap { it.archiveFile })
-        into("$buildDir/docker")
-    }
-
-    val dockerfile by registering(Dockerfile::class) {
-        dependsOn(copyDist)
-
-        from("openjdk:17-slim")
-        addFile(distTar.flatMap { it.archiveFileName }.map { Dockerfile.File(it, "/app/") })
-        defaultCommand(distTar.flatMap { it.archiveFile }.map { it.asFile.nameWithoutExtension }.map { listOf("/app/$it/bin/${project.name}") })
-    }
-
-    val dockerBuild by registering(DockerBuildImage::class) {
-        dependsOn(dockerfile)
-
-        if (version.toString().endsWith("SNAPSHOT")) {
-            images.add("auth:SNAPSHOT")
-        } else {
-            images.add("juggernaut0/auth:$version")
-        }
-    }
-
     (run) {
         systemProperty("config.file", "local.conf")
     }
