@@ -7,4 +7,4 @@ docker run --rm -d \
   --network host \
   -v $PWD/service/local.conf:/app/local.conf \
   -e SERVICE_OPTS='-Dconfig.file=/app/local.conf' \
-  auth:SNAPSHOT $@
+  juggernaut0/auth:SNAPSHOT $@
