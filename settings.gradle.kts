@@ -10,7 +10,7 @@ pluginManagement {
         id("dev.twarner.common") version twarnerVersion
         id("dev.twarner.docker") version twarnerVersion
 
-        val kotlinVersion = "1.8.10"
+        val kotlinVersion = "1.8.20"
         kotlin("js") version kotlinVersion
         kotlin("jvm") version kotlinVersion
         kotlin("kapt") version kotlinVersion
