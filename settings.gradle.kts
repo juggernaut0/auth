@@ -1,12 +1,13 @@
 pluginManagement {
     repositories {
+        mavenLocal()
         gradlePluginPortal()
         mavenCentral()
         maven("https://juggernaut0.github.io/m2/repository")
     }
 
     plugins {
-        val twarnerVersion = "0.3.4"
+        val twarnerVersion = "0.3.6-SNAPSHOT"
         id("dev.twarner.common") version twarnerVersion
         id("dev.twarner.docker") version twarnerVersion
 
@@ -21,12 +22,13 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         maven("https://juggernaut0.github.io/m2/repository")
     }
 
     versionCatalogs {
         create("libs") {
-            from("dev.twarner:catalog:0.3.4")
+            from("dev.twarner:catalog:0.3.6-SNAPSHOT")
         }
     }
 }
