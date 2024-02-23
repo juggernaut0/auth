@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm")
     kotlin("kapt")
@@ -11,10 +9,12 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":auth-common"))
-    implementation(project(":dbmigrate"))
+    implementation(projects.authCommon)
+    implementation(projects.dbmigrate)
 
     implementation(kotlin("stdlib-jdk8"))
+
+    implementation(libs.multiplatformUtils.ktor)
 
     implementation(platform(libs.ktor.bom))
     implementation(libs.bundles.ktor.server.jetty)
@@ -52,7 +52,7 @@ jooq {
             jooqConfiguration.apply {
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
-                    url = "jdbc:postgresql://localhost:6432/auth"
+                    url = "jdbc:postgresql://localhost:5432/auth"
                     user = "auth"
                     password = "auth"
                 }

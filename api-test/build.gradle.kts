@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     testImplementation(kotlin("test-junit"))
-    testImplementation(project(":auth-common"))
+    testImplementation(projects.plugins.authPluginsKtor)
     testImplementation(platform(libs.ktor.bom))
     testImplementation(libs.ktor.client.apache)
 }

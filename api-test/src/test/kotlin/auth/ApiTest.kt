@@ -308,9 +308,6 @@ class ApiTest {
                         port = 9001
                     }
                 }
-                install(JsonSerializationClientPlugin) {
-                    json = Json { serializersModule = authModule }
-                }
             }.let { KtorApiClient(it) }
         }
 

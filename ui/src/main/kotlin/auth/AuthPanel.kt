@@ -4,7 +4,6 @@ import asynclite.async
 import auth.api.v1.*
 import gsi.CredentialResponse
 import gsi.google
-import kotlinx.serialization.json.Json
 import kui.*
 import multiplatform.FetchException
 import org.w3c.dom.HTMLFormElement
@@ -14,7 +13,7 @@ import kotlinx.browser.window
 import multiplatform.api.FetchClient
 
 class AuthPanel : Component() {
-    private val apiClient = FetchClient(json = Json { ignoreUnknownKeys = false; serializersModule = authModule })
+    private val apiClient = FetchClient()
 
     private var registrationMode: Boolean by renderOnSet(false)
 

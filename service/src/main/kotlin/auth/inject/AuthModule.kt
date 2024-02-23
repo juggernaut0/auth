@@ -30,12 +30,6 @@ class AuthModule(private val config: AuthConfig) {
 
     @Provides
     @Singleton
-    fun json(): Json {
-        return Json { serializersModule = authModule }
-    }
-
-    @Provides
-    @Singleton
     fun jwtAlgorithm(): Algorithm {
         return Algorithm.HMAC256(config.jwtSecretKey)
     }

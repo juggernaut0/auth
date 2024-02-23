@@ -7,7 +7,7 @@ plugins {
 }
 
 kotlin {
-    js {
+    js(IR) {
         browser()
     }
 }
@@ -23,16 +23,10 @@ tasks.withType<Kotlin2JsCompile>().configureEach {
     kotlinOptions.moduleKind = "umd"
 }
 
-val sourcesJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("sources")
-    from("$projectDir/src/main/kotlin")
-}
-
 publishing {
     publications {
         register("maven", MavenPublication::class) {
             from(components["kotlin"])
-            artifact(sourcesJar.get())
         }
     }
 }

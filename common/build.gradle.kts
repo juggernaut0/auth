@@ -9,20 +9,13 @@ plugins {
 
 kotlin {
     jvm()
-    js(LEGACY) {
+    js(IR) {
         browser()
     }
 }
 
 dependencies {
     commonMainApi(libs.multiplatformUtils)
-
-    "jvmMainApi"(libs.multiplatformUtils.ktor)
-
-    "jvmTestImplementation"(kotlin("test-junit"))
-    "jvmTestImplementation"(platform(libs.ktor.bom))
-    "jvmTestImplementation"(libs.ktor.server.testHost)
-    "jvmTestImplementation"(libs.ktor.client.mock)
 }
 
 tasks.withType<Kotlin2JsCompile> {

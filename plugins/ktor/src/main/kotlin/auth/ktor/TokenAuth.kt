@@ -1,4 +1,4 @@
-package auth
+package auth.ktor
 
 import io.ktor.client.*
 import io.ktor.client.plugins.*

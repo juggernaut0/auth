@@ -17,6 +17,6 @@ application {
 
 tasks {
     (run) {
-        args = listOf("postgres://auth:auth@localhost:6432/auth")
+        args = listOf("postgres://auth:auth@localhost:5432/auth")
     }
 }
