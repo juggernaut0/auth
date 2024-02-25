@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
-
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
@@ -16,12 +14,4 @@ kotlin {
 
 dependencies {
     commonMainApi(libs.multiplatformUtils)
-}
-
-tasks.withType<Kotlin2JsCompile> {
-    kotlinOptions {
-        moduleKind = "commonjs"
-        sourceMap = true
-        sourceMapEmbedSources = "always"
-    }
 }

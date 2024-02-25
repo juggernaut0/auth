@@ -7,10 +7,6 @@ pluginManagement {
     }
 
     plugins {
-        val twarnerVersion = "0.3.6"
-        id("dev.twarner.common") version twarnerVersion
-        id("dev.twarner.docker") version twarnerVersion
-
         val kotlinVersion = "1.9.22"
         kotlin("js") version kotlinVersion
         kotlin("jvm") version kotlinVersion
@@ -20,19 +16,8 @@ pluginManagement {
     }
 }
 
-dependencyResolutionManagement {
-    repositories {
-        mavenLocal()
-        maven("https://juggernaut0.github.io/m2/repository")
-    }
-
-    versionCatalogs {
-        create("libs") {
-            from("dev.twarner:catalog:0.3.6")
-            version("multiplatform.utils", "0.10.0")
-            version("dagger", "2.50")
-        }
-    }
+plugins {
+    id("dev.twarner.settings") version "1.0.1"
 }
 
 rootProject.name = "auth"

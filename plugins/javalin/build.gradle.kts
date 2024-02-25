@@ -8,13 +8,12 @@ plugins {
 
 dependencies {
     api(projects.authCommon)
-    api("com.github.juggernaut0:multiplatform-utils-javalin:${libs.versions.multiplatform.utils.get()}")
+    api(libs.multiplatformUtils.javalin)
 
     testImplementation(kotlin("test"))
-    testRuntimeOnly("org.slf4j:slf4j-simple:2.0.11")
-    testImplementation("io.mockk:mockk:1.13.9")
-    testImplementation("com.github.juggernaut0:multiplatform-utils-javalin:${libs.versions.multiplatform.utils.get()}")
-    testImplementation("io.javalin:javalin-testtools:6.1.0")
+    testRuntimeOnly(libs.slf4j.simple)
+    testImplementation(libs.mockk)
+    testImplementation(libs.javalin.testtools)
 }
 
 java {

@@ -11,7 +11,7 @@ dependencies {
     api(projects.authCommon)
 
     testImplementation(kotlin("test"))
-    testRuntimeOnly("org.slf4j:slf4j-simple:2.0.11")
+    testRuntimeOnly(libs.slf4j.simple)
     testImplementation(platform(libs.ktor.bom))
     testImplementation(libs.ktor.server.testHost)
     testImplementation(libs.ktor.client.mock)
@@ -40,7 +40,5 @@ tasks {
 
     withType<KotlinCompile>().configureEach {
         kotlinOptions.jvmTarget = "17"
-        kotlinOptions.languageVersion = "1.6"
-        compilerOptions.languageVersion
     }
 }

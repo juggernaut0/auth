@@ -1,7 +1,7 @@
 package auth.db
 
-import auth.db.jooq.Tables.*
-import auth.db.jooq.tables.records.AuthUserRecord
+import dev.twarner.auth.db.jooq.Tables.*
+import dev.twarner.auth.db.jooq.tables.records.AuthUserRecord
 import auth.domain.AuthProvider
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.single
