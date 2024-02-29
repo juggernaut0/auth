@@ -30,9 +30,9 @@ dependencies {
     implementation(libs.bundles.r2dbc.postgresql)
     implementation(libs.kotlinx.coroutines.reactor)
 
-    implementation("at.favre.lib:bcrypt:0.9.0")
+    implementation("at.favre.lib:bcrypt:0.10.2")
 
-    implementation("com.google.api-client:google-api-client:2.0.1")
+    implementation("com.google.api-client:google-api-client:2.3.0")
 }
 
 application {

@@ -17,7 +17,7 @@ pluginManagement {
 }
 
 plugins {
-    id("dev.twarner.settings") version "1.0.1"
+    id("dev.twarner.settings") version "1.0.2"
 }
 
 rootProject.name = "auth"
