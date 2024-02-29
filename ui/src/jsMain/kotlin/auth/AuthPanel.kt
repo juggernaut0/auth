@@ -32,10 +32,13 @@ class AuthPanel : Component() {
     init {
         async {
             val clientId = apiClient.callApi(getGoogleClientId, Unit)
-            google.accounts.id.initialize(object {
+            val config = object {
+                @JsName("client_id")
                 val client_id = clientId
+                @JsName("callback")
                 val callback = ::googleSignIn
-            })
+            }
+            google.accounts.id.initialize(config)
             gsiInit = true
             render()
         }
@@ -57,7 +60,7 @@ class AuthPanel : Component() {
         async {
             try {
                 val req = PasswordRegistrationRequest(email, displayName.takeIf { it.isNotBlank() }, password)
-                val user = apiClient.callApi(auth.api.v1.register, Unit, req)
+                val user = apiClient.callApi(register, Unit, req)
                 setToken(user.token)
                 (document.getElementById("reg-form") as HTMLFormElement).submit() // reloads the page on chrome
                 window.location.reload()
@@ -78,7 +81,7 @@ class AuthPanel : Component() {
 
         async {
             try {
-                val user = apiClient.callApi(auth.api.v1.signIn, Unit, PasswordSignInRequest(email, password))
+                val user = apiClient.callApi(signIn, Unit, PasswordSignInRequest(email, password))
                 setToken(user.token)
                 (document.getElementById("signin-form") as HTMLFormElement).submit() // reloads the page on chrome
                 window.location.reload()
@@ -94,7 +97,7 @@ class AuthPanel : Component() {
 
         async {
             try {
-                val user = apiClient.callApi(auth.api.v1.signIn, Unit, GoogleSignInRequest(response.credential))
+                val user = apiClient.callApi(signIn, Unit, GoogleSignInRequest(response.credential))
                 setToken(user.token)
                 window.location.reload()
             } catch (e: FetchException) {
