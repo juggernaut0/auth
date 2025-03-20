@@ -7,7 +7,7 @@ pluginManagement {
     }
 
     plugins {
-        val kotlinVersion = "1.9.22"
+        val kotlinVersion = "1.9.25"
         kotlin("js") version kotlinVersion
         kotlin("jvm") version kotlinVersion
         kotlin("kapt") version kotlinVersion
@@ -17,7 +17,7 @@ pluginManagement {
 }
 
 plugins {
-    id("dev.twarner.settings") version "1.0.2"
+    id("dev.twarner.settings") version "1.0.5"
 }
 
 rootProject.name = "auth"
