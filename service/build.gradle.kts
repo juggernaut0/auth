@@ -32,7 +32,7 @@ dependencies {
 
     implementation("at.favre.lib:bcrypt:0.10.2")
 
-    implementation("com.google.api-client:google-api-client:2.3.0")
+    implementation("com.google.api-client:google-api-client:2.7.2")
 }
 
 application {
