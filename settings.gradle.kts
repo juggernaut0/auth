@@ -7,7 +7,7 @@ pluginManagement {
     }
 
     plugins {
-        val kotlinVersion = "2.1.10"
+        val kotlinVersion = "2.4.21"
         kotlin("js") version kotlinVersion
         kotlin("jvm") version kotlinVersion
         kotlin("kapt") version kotlinVersion
